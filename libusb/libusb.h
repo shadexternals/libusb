@@ -115,13 +115,9 @@ typedef SSIZE_T ssize_t;
  * return type, before the function name. See internal documentation for
  * API_EXPORTED.
  */
-#if defined(_WIN32) || defined(__CYGWIN__)
-#define LIBUSB_CALL WINAPI
-#define LIBUSB_CALLV WINAPIV
-#else
-#define LIBUSB_CALL
-#define LIBUSB_CALLV
-#endif /* _WIN32 || __CYGWIN__ */
+ // Apply __attribute__((sysv_abi)) for PS4 compatibility.
+#define LIBUSB_CALL __attribute__((sysv_abi))
+#define LIBUSB_CALLV LIBUSB_CALL
 
 /** \def LIBUSB_API_VERSION
  * \ingroup libusb_misc
@@ -2458,7 +2454,8 @@ void LIBUSB_CALL libusb_hotplug_deregister_callback(libusb_context *ctx,
 void * LIBUSB_CALL libusb_hotplug_get_user_data(libusb_context *ctx,
 	libusb_hotplug_callback_handle callback_handle);
 
-int LIBUSB_CALLV libusb_set_option(libusb_context *ctx, enum libusb_option option, ...);
+// NOTE: Removed LIBUSB_CALLV since SysV ABI cannot be used with va_list.
+int /*LIBUSB_CALLV*/ libusb_set_option(libusb_context* ctx, enum libusb_option option, ...);
 
 #ifdef _MSC_VER
 #pragma warning(pop)
